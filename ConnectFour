@@ -1,0 +1,422 @@
+/*
+ * This file is to create a connect four game. 
+ * 
+ * Shyann Minnich
+ * EECS 1510 - Intro to Object Oriented
+ * Dr. Joseph Hobbs
+ * 
+ */
+
+import java.util.Scanner;
+/*
+ * This class is to create a connect four game. 
+ */
+public class ConnectFour 
+{
+	// These variables are used to keep track of whose turn it is in numerous methods
+	public static boolean odd=true;
+	public static boolean full=false;
+	public static int column;
+	public static int number;
+	public static boolean won=false;
+	public static boolean columnFull=false;
+	public static int playAgain=1;
+	public static int count;
+
+	/*
+	 * This main method is to create a scanner, give output, and track which turn it is. 
+	 */
+
+	public static void main(String[] args)
+	{
+		// Create a Scanner
+		Scanner input = new Scanner(System.in);
+		// 1 - play again
+		// 0 - end game
+		
+		do
+		{
+			runGame();
+		}
+		while(playAgain==1);
+	}
+	
+	/*
+	 * This run method is use all the other methods in a functioning manner to get the game to run correctly.
+	 */
+	private static void runGame()
+	{
+	
+		//Prompt the user enter a column
+		Scanner input = new Scanner(System.in);
+		
+		char color = 'x';
+		
+		// create board
+		char[][] board = new char[6][7];
+		
+		displayBoard(board);
+		
+		// how to tell if the board has any empty elements
+		
+		count=0;
+		
+		
+		while ((board[5][0]!='Y'&board[5][0]!='R')||(board[5][1]!='Y'&board[5][1]!='R')||(board[5][2]!='Y'&board[5][2]!='R')||(board[5][3]!='Y'&board[5][3]!='R')||(board[5][4]!='Y'&board[5][4]!='R')||(board[5][5]!='Y'&board[5][5]!='R')||(board[5][6]!='Y'&board[5][6]!='R'))
+		{
+			
+			number = input.nextInt(); 
+			// Who's turn/ What color
+						count ++;
+						int turn = count%2;
+						if (turn == 0)
+						{
+							odd=false;
+							color='R';
+						}
+						else
+						{
+							odd=true;
+							color = 'Y';
+						}
+						
+				
+			//What column does the play want to drop the disk in?
+			//is it a valid column number?
+			if (number<=6 && number>=0)
+			{
+				column=number;
+			}
+			if (number>6 || number<0)
+			{
+				System.out.println("YOU ENTERED AN INVALID INTEGER OR THE COLUMN IS FULL.");
+				count--;
+			}
+			columnIsFull(board,column);
+			dropDisk(board, column, color);
+			displayBoard(board);
+			isWinner(board);
+			
+			if (won)
+			{
+				playAgain = input.nextInt();
+				if(playAgain==1)
+				{
+					won=false;
+					count=0;
+					board = new char[6][7];
+					displayBoard(board);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		//if the board full
+		
+		if(((board[5][0]=='Y'||board[5][0]=='R')&(board[5][1]=='Y'||board[5][1]=='R')&(board[5][2]=='Y'||board[5][2]=='R')&(board[5][3]=='Y'||board[5][3]=='R')&(board[5][4]=='Y'||board[5][4]=='R')&(board[5][5]=='Y'||board[5][5]=='R')&(board[5][6]=='Y'||board[5][6]=='R')))
+		{
+			System.out.println("I declare a draw");
+			System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+			playAgain = input.nextInt();
+			if(playAgain==1)
+			{
+				won=false;
+				count=0;
+				board = new char[6][7];
+				displayBoard(board);
+			}
+			else
+			{
+				Runtime.getRuntime().exit(1);
+			}
+		}
+	}
+					
+		
+		
+	/*
+	 * This method is to display the board to the console.
+	 */
+		
+	private static void displayBoard(char[][] board)
+	 {
+		if(column==number & columnFull==false)
+		{
+			for(int i = board.length - 1; i >= 0; i--)
+			{
+				System.out.print("| ");
+				for(int j = 0; j <board[i].length; j++)
+				{
+					System.out.print(board[i][j] + " | ");
+				}
+				System.out.println();//new line
+			}
+		}
+	 }
+
+	
+	/*
+	 * This method is to drop the colored disk into the specified column.
+	 */
+	private static void dropDisk(char [][] board, int column, char color)
+	{
+		
+		// the board is originally filled with null.
+		// n will be used to see if there is null or a disk
+		//check each item in the column for a row or disk
+		// place a yellow disk at row j in the given column
+		// j is the next empty spot the row
+				
+		
+		for(int i=0; i<6; i++)
+		{
+			char n= board[i][column];
+			if (n==0)
+			{
+				if(odd && column==number)
+				{
+					color = 'Y';
+					board[i][column]=color;
+					break;
+				}
+				// place a red disk at row j in the given column
+				// j is the next empty spot the row
+				if(odd==false & column==number)
+				{
+					color = 'R';
+					board[i][column]= color;
+					break;
+				}
+			}
+		}
+		
+	}
+	
+	/*
+	 * This method is to declare if there is a winner.
+	 */
+	
+	private static void isWinner(char [][] board)
+	{
+		// vertical win
+		for (int i=0; i<7; i++)
+		{
+			if (board[0][i]== board[1][i] && board[0][i]== board[2][i] && board[0][i]== board[3][i])
+			{
+				if (board[0][i]=='R' || board[0][i]=='Y')
+				{
+					if (odd)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+			if (board[1][i]== board[2][i] && board[1][i]== board[3][i] && board[1][i]== board[4][i])
+			{
+				if (board[1][i]=='R' || board[1][i]=='Y')
+				{
+					if (odd)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+			if (board[2][i]== board[3][i] && board[2][i]== board[4][i] && board[2][i]== board[5][i])
+			{
+				if (board[2][i]=='R' || board[2][i]=='Y')
+				{
+					if (odd)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+						//print number of turns and name of winner
+					}
+				}
+			}
+		}
+			
+			// horizontal win 
+		for (int j= 0; j<6; j++)
+		{
+			if (board[j][0]== board[j][1] && board[j][0]== board[j][2] && board[j][0]== board[j][3])
+			{
+				if (board[j][0]=='R' || board[j][0]=='Y')
+				{
+					if (odd & won==false)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false & won==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+			if (board[j][1]== board[j][2] && board[j][1]== board[j][3] && board[j][1]== board[j][4])
+			{
+				if (board[j][1]=='R' || board[j][1]=='Y')
+				{
+					if (odd& won==false)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false& won==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+			if (board[j][2]== board[j][3] && board[j][2]== board[j][4] && board[j][2]== board[j][5])
+			{
+				if (board[j][2]=='R' || board[j][2]=='Y')
+				{
+					if (odd& won==false)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false& won==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+			if (board[j][3]== board[j][4] && board[j][3]== board[j][5] && board[j][3]== board[j][6])
+			{
+				if (board[j][3]=='R' || board[j][3]=='Y')
+				{
+					if (odd& won==false)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (odd==false& won==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+		}
+		// Diagonal
+		
+		for (int k = 0; k<=2; k++)
+		{
+			for (int l = 6; l>=3; l--)
+			{
+				if (board[k][l]==board[k+1][l-1] && board[k][l]==board[k+2][l-2]&& board[k][l]==board[k+3][l-3])
+				{	
+					if (board[k][l]=='Y'& won==false)
+					{
+						System.out.println("Y has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+					if (board[k][l]=='R'& won==false)
+					{
+						System.out.println("R has WON the game!");
+						System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+						won=true;
+						break;
+					}
+				}
+			}
+		}
+			for (int b = 0; b<=2; b++)
+			{
+				for (int z = 0; z<=3; z++)
+				{
+					if (board[b][z]==board[b+1][z+1] && board[b][z]==board[b+2][z+2]&& board[b][z]==board[b+3][z+3])
+					{	
+						if (board[b][z]=='Y'& won==false)
+						{
+							System.out.println("Y has WON the game!");
+							System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+							won=true;
+							break;
+						}
+						if (board[b][z]=='R'& won==false)
+						{
+							System.out.println("R has WON the game!");
+							System.out.println("DO YOU WANT TO PLAY A NEW GAME? (type 1 for yes)");
+							won=true;
+							break;
+						}
+					}
+				}
+			}		
+		
+	}
+		
+	/*
+	 * This method is to check if a column if full.
+	 */
+	
+	private static void columnIsFull(char [][] board, int column)
+	{
+		char n = board[5][column];
+		if (n=='Y' || n=='R') 
+		{
+					columnFull=true;
+			System.out.println("YOU ENTERED AN INVALID INTEGER OR THE COLUMN IS FULL.");
+			count--;
+		}
+		else
+			columnFull=false;
+	}
+}
+
+
