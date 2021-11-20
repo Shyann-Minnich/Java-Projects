@@ -1,0 +1,206 @@
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.scene.shape.Line;
+
+public class Geometry extends Application{
+	
+	// Create Variables 
+	protected static double x1=100.0;
+	protected static double y1=100.0;
+	protected static double x2=200.0;
+	protected static double y2=100.0;
+	protected static double x3=100.0;
+	protected static double y3=200.0;
+	
+	protected static Circle circleA = new Circle(x1,y1,10);
+	protected static Circle circleB = new Circle(x2,y2,10);
+	protected static Circle circleC = new Circle(x3,y3,10);
+	
+	protected static Line side1 = new Line(x2,y2,x3,y3);
+	protected static Line side2 = new Line(x1,y1,x3,y3);
+	protected static Line side3 = new Line(x1,y1,x2,y2);
+	
+	protected static Text A1 = new Text();
+	protected static Text B1 = new Text();
+	protected static Text C1 = new Text();	
+	
+	protected double s1;
+	protected double s2;
+	protected double s3;
+	
+	protected double A;
+	protected double B;
+	protected double C;
+	
+	protected String AngleA=String.valueOf(A);
+	protected String AngleB=String.valueOf(B);
+	protected String AngleC=String.valueOf(C);
+		
+	public void computeSides(double x1, double y1, double x2, double y2, double x3, double y3) {
+		//Compute three sides
+		s1 = Math.sqrt((x2-x3)*(x2-x3) + (y2-y3)*(y2-y3));
+		s2 = Math.sqrt((x1-x3)*(x1-x3) + (y1-y3)*(y1-y3));
+		s3 = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+	}
+	
+	public void computeAngles(double s1, double s2, double s3) {
+		//Compute three angles
+		A = Math.toDegrees(Math.acos((s1*s1-s2*s2-s3*s3)/(-2*s2*s3)));
+		B = Math.toDegrees(Math.acos((s2*s2-s1*s1-s3*s3)/(-2*s1*s3)));
+		C = Math.toDegrees(Math.acos((s3*s3-s2*s2-s1*s1)/(-2*s1*s2)));
+	}
+	
+	public double getSide1() {
+		return s1;
+	}
+	public double getSide2() {
+		return s2;
+	}
+	public double getSide3() {
+		return s3;
+	}
+	
+	public double getAngleA() {
+		return A;
+	}
+	public double getAngleB() {
+		return B;
+	}
+	public double getAngleC() {
+		return C;
+	}
+	
+	//Override the start method in the Application class
+	@Override
+	public void start(Stage primaryStage) {
+		
+		//compute starting angles and sides
+		computeSides(x1,y1,x2,y2,x3,y3);
+		s1=getSide1();
+		s2=getSide2();
+		s3=getSide3();
+		computeAngles(s1,s2,s3);
+		A=getAngleA();
+		B=getAngleB();
+		C=getAngleC();
+		AngleA=String.valueOf(A);
+		AngleB=String.valueOf(B);
+		AngleC=String.valueOf(C);
+		
+		//Circle CircleA at the first vertex
+		circleA.setStroke(Color.BLACK);
+		//line for Side1
+		side1.setStrokeWidth(5);
+		side1.setStroke(Color.BLACK);
+		//text for angle A 
+		A1.setX(x1);
+		A1.setY(y1-20);
+		A1.setText(AngleA);
+		//Circle CircleB at the second vertex
+		circleB.setStroke(Color.BLACK);
+		//line for Side2
+		side2.setStrokeWidth(5);
+		side2.setStroke(Color.BLACK);
+		//text for angle B
+		B1.setX(x2);
+		B1.setY(y2+20);
+		B1.setText(AngleB);
+		//Circle CircleC at the third vertex
+		circleC.setStroke(Color.BLACK);
+		//line for Side3
+		side3.setStrokeWidth(5);
+		side3.setStroke(Color.BLACK);
+		//text for angle C
+		C1.setX(x3+20);
+		C1.setY(y3);
+		C1.setText(AngleC);
+		
+		//Create a scene and place it in the stage
+		Pane pane = new Pane();
+		pane.getChildren().addAll(A1,B1,C1,circleA,circleB,circleC,side1,side2,side3);
+		circleA.setOnMouseDragged(e1 -> {
+			x1=(e1.getX());
+			y1=(e1.getY());
+			circleA.setCenterX(x1);
+			circleA.setCenterY(y1);
+			A1.setX(x1);
+			A1.setY(y1-20);
+			side2.setStartX(x1);
+			side2.setStartY(y1);
+			side3.setStartX(x1);
+			side3.setStartY(y1);
+			computeSides(x1,y1,x2,y2,x3,y3);
+			s1=getSide1();
+			s2=getSide2();
+			s3=getSide3();
+			computeAngles(s1,s2,s3);
+			A=getAngleA();
+			B=getAngleB();
+			C=getAngleC();
+			AngleA=String.valueOf(A);
+			A1.setText(AngleA);
+		});
+		circleB.setOnMouseDragged(e2 -> {
+			x2=(e2.getX());
+			y2=(e2.getY());
+			circleB.setCenterX(x2);
+			circleB.setCenterY(y2);
+			B1.setX(x2);
+			B1.setY(y2+20);
+			side1.setStartX(x2);
+			side1.setStartY(y2);
+			side3.setEndX(x2);
+			side3.setEndY(y2);
+			computeSides(x1,y1,x2,y2,x3,y3);
+			s1=getSide1();
+			s2=getSide2();
+			s3=getSide3();
+			computeAngles(s1,s2,s3);
+			A=getAngleA();
+			B=getAngleB();
+			C=getAngleC();
+			AngleB=String.valueOf(B);
+			B1.setText(AngleB);
+		});
+		circleC.setOnMouseDragged(e3 -> {
+			x3=(e3.getX());
+			y3=(e3.getY());
+			circleC.setCenterX(x3);
+			circleC.setCenterY(y3);
+			C1.setX(x3+20);
+			C1.setY(y3);
+			side1.setEndX(x3);
+			side1.setEndY(y3);
+			side2.setEndX(x3);
+			side2.setEndY(y3);
+			computeSides(x1,y1,x2,y2,x3,y3);
+			s1=getSide1();
+			s2=getSide2();
+			s3=getSide3();
+			computeAngles(s1,s2,s3);
+			A=getAngleA();
+			B=getAngleB();
+			C=getAngleC();
+			AngleC=String.valueOf(C);
+			C1.setText(AngleC);
+		});
+		
+		//Create a scene and place it in the stage
+		Scene scene = new Scene(pane, 300,300);
+		primaryStage.setTitle("Geometry"); //Set the stage title
+		primaryStage.setScene(scene); //Place the scene in the stage
+		primaryStage.show(); //Display the stage
+		
+	}
+	public static void main(String[] args) {
+		Application.launch(Geometry.class, args);
+	}
+}
+
+
+
